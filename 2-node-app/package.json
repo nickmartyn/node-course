@@ -1,0 +1,15 @@
+{
+  "name": "2-node-app",
+  "version": "1.0.0",
+  "description": "vanilla nodejs app with basic crud methods implementation",
+  "license": "ISC",
+  "author": "nickmartyn",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start@dev": "nodemon index.mjs"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
