@@ -1,0 +1,23 @@
+
+FROM nickmart/node:latest as builder
+
+USER node
+WORKDIR /app
+
+COPY package.json .
+COPY package-lock.json .
+
+RUN npm ci --omit=dev
+
+FROM nickmart/node:latest
+
+WORKDIR /app
+USER node
+
+COPY --from=builder  /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY app ./app
+
+EXPOSE 4000
+
+CMD ["node","./app/server.js"]

@@ -1,0 +1,14 @@
+
+FROM nickmart/node:latest
+
+WORKDIR /src
+
+COPY ./kv-server/package.json .
+
+RUN npm install
+
+COPY ./kv-server/app ./app
+
+EXPOSE 3000
+
+CMD ["npx", "nodemon","./app/server.js"]
