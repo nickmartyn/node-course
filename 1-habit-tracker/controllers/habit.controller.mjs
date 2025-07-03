@@ -1,5 +1,4 @@
 import process from 'node:process';
-import { parseArgs } from 'node:util';
 import { addHabit, updateHabit, doHabit, deleteHabit, listHabits, showStats } from '../services/habits.service.mjs';
 
 const OPERATIONS = {
@@ -11,46 +10,19 @@ const OPERATIONS = {
   UPDATE: 'update'
 };
 
-
-function parseCommandlineArgs() {
-  const config = {
-    args: process.argv.slice(2), 
-    allowPositionals: true,
-    options: {
-      name: { 
-        type: 'string'
-      },
-      freq: { 
-        type: 'string'
-      },
-      id: { 
-        type: 'string'
-      },
-    }
-  }
-
-  const {
-    values,
-    positionals,
-  } = parseArgs(config);
-  console.log('positionals:', positionals);
-  return { operation: positionals[0], values };
-}
-
-
-function handle(operation, values) {
-  console.log('Handling operation:', operation, 'with values:', values);
+async function handle(operation, values) {
+  console.log('Handling operation:', operation, 'with values:', Object.values(values));
   try {
     if (operation === OPERATIONS.ADD) {
       return addHabit(values);
     }
 
     if (operation === OPERATIONS.UPDATE) {
-      return updateHabit(values.id, values);
+      return console.log(await updateHabit(values.id, values));
     }
 
     if (operation === OPERATIONS.LIST) {
-      return listHabits();
+      return console.table(await listHabits(), ['name', 'freq']);
     }
 
     if (operation === OPERATIONS.DONE) {
@@ -58,8 +30,8 @@ function handle(operation, values) {
     }
 
     if (operation === OPERATIONS.STATS) {
-      console.log('Showing stats');
-      return showStats();
+      const stats = await showStats();
+      return console.table(stats, ['name', 'freq', 'percentageDoneInLast7Days', 'percentageDoneInLast30Days']);
     }
 
     if (operation === OPERATIONS.DELETE) {
@@ -73,4 +45,4 @@ function handle(operation, values) {
 
 }
 
-export { handle, parseCommandlineArgs, OPERATIONS };
+export { handle, OPERATIONS };
