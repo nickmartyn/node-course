@@ -1,35 +1,22 @@
 
 const routes = [];
 
-function addRoute(method, path, handler) {
-    // Convert path pattern to regex and extract param names
-    const paramNames = [];
-
-    const regexPath = path.replace(/:([^/]+)/g, (_, key) => {
-        paramNames.push(key);
-        return '([^/]+)';
-    });
-
-    const regex = new RegExp(`^${regexPath}$`);
-    routes.push({ method: method, regex, paramNames, handler });
+function addRoute(method, path, dynamicParam, handler) {
+    routes.push({ method: method.toUpperCase(), path, dynamicParam, handler });
 }
 
 function handle(req, res) {
-    const urlPath = req.url.split('?')[0];
+    const urlPath = req.url;
     for (const route of routes) {
-        if (route.method === req.method) {
-            console.log('Matching method:', route.method);
-            const match = urlPath.match(route.regex);
-            const params = {};
-            if (match) {
-                // Extract params if present
-                route.paramNames.forEach((name, idx) => {
-                    params[name] = match[idx + 1];
-                });
-            }
-            // Attach params to req
-            req.params = params;
-            return route.handler(req, res);
+        if (route.method === req.method && urlPath.startsWith(route.path)) {
+          const params = {};
+          if (urlPath.split('/').length > 2) {
+              // Extract params if present
+              params[route.dynamicParam] = urlPath.split('/')[2];
+          }
+          // Attach params to req
+          req.params = params;
+          return route.handler(req, res);
         }
     }
     res.writeHead(405, { 'Content-Type': 'application/json' });
