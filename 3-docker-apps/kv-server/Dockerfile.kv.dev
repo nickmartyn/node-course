@@ -1,13 +1,14 @@
 
 FROM nickmart/node:latest
 
+USER node
 WORKDIR /src
 
-COPY ./kv-server/package.json .
+COPY ./package.json .
 
 RUN npm install
 
-COPY ./kv-server/app ./app
+COPY ./app ./app
 
 EXPOSE 3000
 
