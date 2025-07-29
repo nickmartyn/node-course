@@ -12,18 +12,18 @@ import {
 } from '@nestjs/common';
 import {
   CreateTeaDTO,
-  // CreateTeaSchema,
+  CreateTeaSchema,
   ApiCreateTeaDTO,
 } from './dto/createTea.dto';
 import {
   UpdateTeaDTO,
-  // UpdateTeaSchema,
+  UpdateTeaSchema,
   ApiUpdateTeaDTO,
 } from './dto/updateTea.dto';
 import { PaginationDTO } from './dto/pagination.dto';
 import { TeaService } from './tea.service';
 import { Tea } from './tea.entity';
-// import { ZBody } from './decorators/zbody.decorator';
+import { ZBody } from '../decorators/zbody.decorator';
 import {
   GetAllTeasApiResponseDTO,
   TeaResponseDTO,
@@ -46,8 +46,8 @@ export class TeaController {
   })
   async createTea(
     @Body('body')
+    @ZBody(CreateTeaSchema)
     body: CreateTeaDTO,
-    // @ZBody(CreateTeaSchema)
   ): Promise<void> {
     return this.teaService.createTea(body);
   }
@@ -86,7 +86,7 @@ export class TeaController {
   @ApiBody({ type: ApiUpdateTeaDTO })
   updateTea(
     @Param('id') id: string,
-    // @ZBody((() => UpdateTeaSchema)())
+    @ZBody(UpdateTeaSchema)
     payload: UpdateTeaDTO,
   ): Promise<Tea | null> {
     return this.teaService.updateTea(id, payload);
