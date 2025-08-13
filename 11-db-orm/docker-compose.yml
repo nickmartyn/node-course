@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  db11:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nickDB
+    ports:
+      - "2345:5432"
+    volumes:
+      - pgdata11:/var/lib/postgresql/data
+volumes:
+  pgdata11:
