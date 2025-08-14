@@ -6,13 +6,17 @@ export class BrewsService {
     this.brewsModel = brewsModel;
  }
 
-  async getAllBrews(minRatingFilter = null) {
-    if (minRatingFilter) {
-      console.log(`Filtering brews with rating >= ${minRatingFilter}`);
-      const data = await this.brewsModel.getAllBrews().filter(brew => brew.rating >= minRatingFilter);
-      return data
+  async getAllBrews(ratingMinFilter = null, methodFilter = null) {
+    let data = await this.brewsModel.getAllBrews();
+    if (ratingMinFilter) {
+      console.log(`Filtering brews with rating >= ${ratingMinFilter}`);
+      data = data.filter(brew => brew.rating >= ratingMinFilter);
     }
-    return this.brewsModel.getAllBrews();
+    if (methodFilter) {
+      console.log(`Filtering brews with method: ${methodFilter}`);
+      data = data.filter(brew => brew.method === methodFilter);
+    }
+    return data;
   }
 
   async getBrewById(id) {

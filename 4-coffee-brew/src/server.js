@@ -1,5 +1,6 @@
 import { createApp } from './app.js';
 import { config } from './config/index.js';
+import { container } from './container.js';
 
 const app = createApp();
 
@@ -9,6 +10,7 @@ const server = app.listen(config.port, () => {
 
 function shutDown() {
   console.log('🔄  Shutting down gracefully...');
+  container.dispose();
   server.close(() => {
     console.log('✅  Closed out remaining connections');
     process.exit(0);

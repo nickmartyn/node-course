@@ -9,9 +9,10 @@ export class BrewsController {
   }
 
   async getAllBrews(req, res) {
-    const filter = req.query.minRating ? req.query.minRating : null;
+    const ratingMinFilter = req.query.minRating ? req.query.minRating : null;
+    const methodFilter = req.query.method ? req.query.method : null;
     try {
-      const brews = await this.brewsService.getAllBrews(filter);
+      const brews = await this.brewsService.getAllBrews(ratingMinFilter, methodFilter);
       res.status(200).json(brews);
     } catch (_error) {
       res.status(400).json({ error: 'Failed to fetch brews' });
@@ -56,7 +57,10 @@ export class BrewsController {
   async deleteBrew(req, res) {
     const { id } = req.params;
     try {
-      this.brewsService.deleteBrew(id);
+      const deletedBrew = await this.brewsService.deleteBrew(id);
+      if (!deletedBrew) {
+        return res.status(404).json({ error: 'Brew not found' });
+      }
       res.status(204).send(id);
     } catch (_error) {
       res.status(400).json({ error: 'Failed to delete brew' });

@@ -19,7 +19,8 @@ const paramsSchema = z.object({
 });
 
 const querySchema = z.object({
-  ratingMin: z.coerce.number().min(1).max(5).optional().describe('Minimum rating filter')
+  ratingMin: z.coerce.number().min(1).max(5).optional().describe('Minimum rating filter'),
+  method: z.enum(["v60", "aeropress", "chemex", "espresso"]).optional().describe('Brewing method filter') 
 });
 
 router.get('/brews',
@@ -29,6 +30,7 @@ registry.registerPath({
   method: 'get',
   path: '/api/brews',
   tags: ['Brews'],
+  request: {query: querySchema},
   responses: {
     200: {
       description: 'Array of brews',
