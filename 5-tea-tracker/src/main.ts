@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ShutdownSignal } from '@nestjs/common';
-
+import { patchNestjsSwagger } from '@anatine/zod-nestjs';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -12,8 +12,11 @@ async function bootstrap() {
     .setTitle('Tea example')
     .setDescription('The Tea API description')
     .setVersion('1.0')
+    .addApiKey({ name: 'x-api-key', in: 'header', type: 'apiKey' }, 'x-api-key')
     .addTag('Tea')
     .build();
+
+  patchNestjsSwagger();
 
   const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, documentFactory);

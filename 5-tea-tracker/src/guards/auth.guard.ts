@@ -23,10 +23,6 @@ export class AuthGuard implements CanActivate {
 
     const req = ctx.switchToHttp().getRequest<Request>();
     const headers = req.headers;
-    if (headers?.['x-api-key'] === this.apiKey) {
-      return true;
-    } else {
-      return false;
-    }
+    return headers?.['x-api-key'] === this.apiKey;
   }
 }

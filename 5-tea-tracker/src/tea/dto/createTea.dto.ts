@@ -9,7 +9,7 @@ export const CreateTeaSchema = z
     brewTemp: z.number().min(60).max(100).optional(),
     notes: z.string().min(0).max(150).optional(),
   })
-  .required();
+  .strict();
 
 export type CreateTeaDTO = z.infer<typeof CreateTeaSchema>;
 export class ApiCreateTeaDTO extends createZodDto(CreateTeaSchema) {}

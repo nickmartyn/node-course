@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TeaModule } from './tea/tea.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -17,7 +16,7 @@ import { APP_GUARD } from '@nestjs/core';
       ],
     }),
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
     AppService,
     {

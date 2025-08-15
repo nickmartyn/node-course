@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Tea } from './tea.entity';
 import { CreateTeaDTO } from './dto/createTea.dto';
 import { UpdateTeaDTO } from './dto/updateTea.dto';
-import { PaginationDTO } from './dto/pagination.dto';
+import { IPaginationDTO } from './dto/pagination.dto';
 import { TeaResponseDTO } from './dto/teaResponse.dto';
 
 const baseArr = [
@@ -66,7 +66,7 @@ export class TeaService {
     return;
   }
 
-  getAllTeas(minRating, pagination?: PaginationDTO): Promise<TeaResponseDTO> {
+  getAllTeas(minRating, pagination?: IPaginationDTO): Promise<TeaResponseDTO> {
     const allData = Array.from(this.store.values()).filter((tea) => {
       if (minRating) {
         return tea.rating >= minRating;

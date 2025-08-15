@@ -4,12 +4,12 @@ import { createZodDto } from '@anatine/zod-nestjs';
 export const UpdateTeaSchema = z
   .object({
     name: z.string().optional(),
-    origin: z.number().optional(),
+    origin: z.string().min(2).max(30).optional(),
     rating: z.number().optional(),
     brewTemp: z.number().optional(),
     notes: z.string().optional(),
   })
-  .partial();
+  .strict();
 
 export type UpdateTeaDTO = z.infer<typeof UpdateTeaSchema>;
 export class ApiUpdateTeaDTO extends createZodDto(UpdateTeaSchema) {}

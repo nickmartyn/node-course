@@ -3,10 +3,6 @@ import { ShutdownSignal } from '@nestjs/common';
 
 @Injectable()
 export class AppService implements OnApplicationShutdown {
-  getHello(): string {
-    return 'Hello World!';
-  }
-
   onApplicationShutdown(signal?: string) {
     if (signal === ShutdownSignal.SIGINT) {
       console.log('Bye tea‑lovers 👋');
