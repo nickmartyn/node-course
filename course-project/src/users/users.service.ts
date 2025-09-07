@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -10,8 +12,18 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(user: Partial<User>): Promise<User> {
-    const newUser = this.usersRepository.create(user);
+  async create(data: CreateUserDto): Promise<User> {
+    const newUser = new User();
+
+    const { firstName, lastName, email, password } = data;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    newUser.firstName = firstName;
+    newUser.lastName = lastName;
+    newUser.email = email;
+
+    newUser.passwordHash = hashedPassword;
+
     return this.usersRepository.save(newUser);
   }
 
@@ -24,6 +36,17 @@ export class UsersService {
     let user: User | null;
     try {
       user = await this.usersRepository.findOneBy({ id });
+    } catch (error) {
+      console.error('Error finding user:', error);
+      throw error;
+    }
+    return user;
+  }
+
+  async findOneByEmail(email: string): Promise<User | null> {
+    let user: User | null;
+    try {
+      user = await this.usersRepository.findOneBy({ email });
     } catch (error) {
       console.error('Error finding user:', error);
       throw error;

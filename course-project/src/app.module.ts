@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { UsersController } from './users/users.controller';
 import { PostsController } from './posts/posts.controller';
 import { UsersService } from './users/users.service';
@@ -11,7 +9,7 @@ import { UsersModule } from './users/users.module';
 import { ConfigService } from '@nestjs/config';
 import { PostsModule } from './posts/posts.module';
 import { AuthModule } from './auth/auth.module';
-
+import { RedisModule } from './redis/redis.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ cache: true, isGlobal: true }),
@@ -26,7 +24,6 @@ import { AuthModule } from './auth/auth.module';
         password: configService.get<string>('POSTGRES_PASSWORD'),
         database: configService.get<string>('POSTGRES_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        // synchronize: process.env.NODE_ENV === 'development',
         synchronize: true,
         autoLoadEntities: true,
         logging: true,
@@ -37,8 +34,9 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     PostsModule,
     AuthModule,
+    RedisModule,
   ],
-  controllers: [AppController, UsersController, PostsController],
-  providers: [AppService, UsersService, PostsService],
+  controllers: [UsersController, PostsController],
+  providers: [UsersService, PostsService],
 })
 export class AppModule {}

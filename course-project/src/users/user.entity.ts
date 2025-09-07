@@ -22,7 +22,7 @@ export class User extends BaseModel {
 
   @Column()
   @ApiProperty({ example: 'password', description: 'saved password to log in' })
-  password: string;
+  passwordHash: string;
 
   @Column({ default: true })
   @ApiProperty({
@@ -32,7 +32,7 @@ export class User extends BaseModel {
   isActive: boolean;
 
   @OneToMany(() => Post, (post) => post.user)
-  @ApiProperty({ example: 'Nick', description: 'The name of the user' })
+  @ApiProperty({ example: '', description: 'Id of related entity' })
   @JoinColumn()
   posts: Post[];
 }

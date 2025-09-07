@@ -27,14 +27,10 @@ export class Post extends BaseModel {
   })
   content: string;
 
-  // @TODO: Add Node entity and relation
-  // @ApiProperty({ type: () => Node })
-  // node: Node;
-
   @ManyToOne(() => User, (user) => user.posts)
   @ApiProperty({
     example: 'id',
     description: 'The author user id of the post',
   })
-  user: number;
+  user: User;
 }

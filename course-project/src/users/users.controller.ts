@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Public } from '../decorators/public.decorator';
 import {
   ApiOkResponse,
   ApiCreatedResponse,
@@ -37,6 +38,7 @@ export class UsersController {
     return user;
   }
 
+  @Public()
   @Post()
   @ApiCreatedResponse({ description: 'User created', type: User })
   @ApiBadRequestResponse({ description: 'Invalid payload' })

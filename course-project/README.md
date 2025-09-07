@@ -45,3 +45,7 @@ $ npm run test:e2e
 ```
 
 
+## App Usage
+
+1. User log-in POST {{base_url}}/auth/token
+

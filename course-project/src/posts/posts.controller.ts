@@ -5,6 +5,7 @@ import {
   Put,
   Body,
   Param,
+  Query,
   Delete,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -19,6 +20,8 @@ import {
   ApiForbiddenResponse,
   ApiBody,
 } from '@nestjs/swagger';
+import { User } from '../decorators/user.decorator';
+import type { AuthorizedUser } from '../types/authorizedUser.interface';
 
 @Controller('posts')
 export class PostsController {
@@ -27,8 +30,15 @@ export class PostsController {
   @Get()
   @ApiOkResponse({ description: 'List of posts', type: [PostEntity] })
   @ApiForbiddenResponse({ description: 'Access denied' })
-  async getAllPosts() {
-    return this.postsService.findAll();
+  async getAllPosts(@Query('userId') userId?: string) {
+    let posts: PostEntity[];
+    try {
+      posts = await this.postsService.findAll(userId);
+    } catch (error) {
+      console.error('Error retrieving posts:', error);
+      throw error;
+    }
+    return posts;
   }
 
   @Get(':id')
@@ -49,8 +59,8 @@ export class PostsController {
   @ApiCreatedResponse({ description: 'Post created', type: PostEntity })
   @ApiBadRequestResponse({ description: 'Invalid payload' })
   @ApiForbiddenResponse({ description: 'Access denied' })
-  async createPost(@Body() body: CreatePostDto) {
-    const post = await this.postsService.create(body);
+  async createPost(@User() user: AuthorizedUser, @Body() body: CreatePostDto) {
+    const post = await this.postsService.create(user.userId, body);
     return post;
   }
 
