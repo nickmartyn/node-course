@@ -24,6 +24,17 @@ async function bootstrap() {
       status: 500,
       description: 'Internal server error',
     })
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'Bearer',
+    )
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);

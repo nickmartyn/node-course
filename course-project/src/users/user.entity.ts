@@ -2,6 +2,7 @@ import { Entity, Column, OneToMany, JoinColumn } from 'typeorm';
 import { BaseModel } from '../entities/baseModel';
 import { Post } from '../posts/post.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User extends BaseModel {
@@ -20,6 +21,7 @@ export class User extends BaseModel {
   })
   email: string;
 
+  @Exclude()
   @Column()
   @ApiProperty({ example: 'password', description: 'saved password to log in' })
   passwordHash: string;
@@ -32,7 +34,16 @@ export class User extends BaseModel {
   isActive: boolean;
 
   @OneToMany(() => Post, (post) => post.user)
-  @ApiProperty({ example: '', description: 'Id of related entity' })
+  @ApiProperty({
+    type: () => Post,
+    example: '',
+    description: 'Id of related entity',
+  })
   @JoinColumn()
   posts: Post[];
+
+  constructor(partial?: Partial<User>) {
+    super();
+    Object.assign(this, partial);
+  }
 }

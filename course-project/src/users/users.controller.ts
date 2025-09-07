@@ -6,6 +6,10 @@ import {
   Param,
   Delete,
   Put,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+  ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
@@ -19,26 +23,33 @@ import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiBody,
+  ApiBearerAuth,
+  ApiTags
 } from '@nestjs/swagger';
-
+import type { AuthorizedUser } from '../types/authorizedUser.interface';
+import { User as CurrentUser } from 'src/decorators/user.decorator';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
   @ApiOkResponse({ description: 'User found', type: User })
   @ApiBadRequestResponse({ description: 'Invalid ID format' })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
+  @ApiTags('Protected')
+  @ApiBearerAuth('Bearer')
   async getUser(@Param('id') id: string) {
     const user = await this.usersService.findOne(id);
-    console.log('Retrieved user:', user);
     if (!user) {
-      return { message: 'User not found' };
+      throw new NotFoundException('User not found');
     }
     return user;
   }
 
   @Public()
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @ApiCreatedResponse({ description: 'User created', type: User })
   @ApiBadRequestResponse({ description: 'Invalid payload' })
@@ -49,14 +60,24 @@ export class UsersController {
     return user;
   }
 
-  @Put()
+  @UseInterceptors(ClassSerializerInterceptor)
+  @Put(':id')
   @ApiOkResponse({ description: 'User updated', type: User })
   @ApiBadRequestResponse({ description: 'Invalid payload' })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
+  @ApiTags('Protected')
+  @ApiBearerAuth('Bearer')
   @ApiBody({ type: UpdateUserDto })
-  async updateUser(@Body() body: Partial<User>) {
-    const user = await this.usersService.update(body.id, body);
+  async updateUser(
+    @CurrentUser() currentUser: AuthorizedUser,
+    @Param() userId: string,
+    @Body() body: Partial<User>,
+  ) {
+    if (currentUser.userId !== userId) {
+      throw new ForbiddenException('You can only update your own user');
+    }
+    const user = await this.usersService.update(userId, body);
     return user;
   }
 
@@ -65,8 +86,16 @@ export class UsersController {
   @ApiBadRequestResponse({ description: 'Invalid ID format' })
   @ApiNotFoundResponse({ description: 'User not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
-  async deleteUser(@Param('id') id: string) {
-    const user = await this.usersService.delete(id);
-    return user;
+  @ApiTags('Protected')
+  @ApiBearerAuth('Bearer')
+  async deleteUser(
+    @CurrentUser() currentUser: AuthorizedUser,
+    @Param('id') id: string,
+  ) {
+    if (currentUser.userId !== id) {
+      throw new ForbiddenException('You can only update your own user');
+    }
+    await this.usersService.delete(id);
+    return id;
   }
 }

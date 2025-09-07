@@ -14,7 +14,7 @@ export class CreatePostDto {
   @ApiProperty({ example: '#nestjs', description: 'The hashtag of the post' })
   hashtag: string;
 
-  // IsBoolean()
+  @IsBoolean()
   @ApiProperty({
     example: true,
     description: 'Whether the post is published',

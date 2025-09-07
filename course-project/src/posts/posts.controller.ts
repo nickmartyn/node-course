@@ -19,14 +19,17 @@ import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiBody,
+  ApiTags, 
+  ApiBearerAuth
 } from '@nestjs/swagger';
 import { User } from '../decorators/user.decorator';
 import type { AuthorizedUser } from '../types/authorizedUser.interface';
-
+import { Public } from '../decorators/public.decorator';
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @Public()
   @Get()
   @ApiOkResponse({ description: 'List of posts', type: [PostEntity] })
   @ApiForbiddenResponse({ description: 'Access denied' })
@@ -41,6 +44,7 @@ export class PostsController {
     return posts;
   }
 
+  @Public()
   @Get(':id')
   @ApiOkResponse({ description: 'Post found', type: PostEntity })
   @ApiBadRequestResponse({ description: 'Invalid ID format' })
@@ -59,6 +63,8 @@ export class PostsController {
   @ApiCreatedResponse({ description: 'Post created', type: PostEntity })
   @ApiBadRequestResponse({ description: 'Invalid payload' })
   @ApiForbiddenResponse({ description: 'Access denied' })
+  @ApiTags('Protected')
+  @ApiBearerAuth('Bearer')
   async createPost(@User() user: AuthorizedUser, @Body() body: CreatePostDto) {
     const post = await this.postsService.create(user.userId, body);
     return post;
@@ -70,8 +76,14 @@ export class PostsController {
   @ApiNotFoundResponse({ description: 'Post not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
   @ApiBody({ type: UpdatePostDto })
-  async updatePost(@Param('id') id: string, @Body() body: UpdatePostDto) {
-    const post = await this.postsService.update(id, body);
+  @ApiTags('Protected')
+  @ApiBearerAuth('Bearer')
+  async updatePost(
+    @User() user: AuthorizedUser,
+    @Param('id') postId: string,
+    @Body() body: UpdatePostDto,
+  ) {
+    const post = await this.postsService.update(user.userId, postId, body);
     return post;
   }
 
@@ -80,8 +92,10 @@ export class PostsController {
   @ApiBadRequestResponse({ description: 'Invalid ID format' })
   @ApiNotFoundResponse({ description: 'Post not found' })
   @ApiForbiddenResponse({ description: 'Access denied' })
-  async deletePost(@Param('id') id: string) {
-    const post = await this.postsService.delete(id);
+  @ApiTags('Protected')
+  @ApiBearerAuth('Bearer')
+  async deletePost(@User() user: AuthorizedUser, @Param('id') postId: string) {
+    const post = await this.postsService.delete(postId, user.userId);
     return post;
   }
 }

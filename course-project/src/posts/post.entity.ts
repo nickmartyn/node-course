@@ -29,6 +29,7 @@ export class Post extends BaseModel {
 
   @ManyToOne(() => User, (user) => user.posts)
   @ApiProperty({
+    type: () => User,
     example: 'id',
     description: 'The author user id of the post',
   })

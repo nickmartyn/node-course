@@ -31,15 +31,19 @@ export class PostsService {
     newPost.hashtag = post.hashtag;
     newPost.isPublished = post.isPublished;
     newPost.content = post.content;
-    newPost.user = user;
+    newPost.user = { id: userId } as User;
     const newlyCreatedPost = await this.postsRepository.save(newPost);
     await this.resetCacheValue(userId);
     return newlyCreatedPost;
   }
 
-  async update(id: string, body: UpdatePostDto) {
-    await this.postsRepository.update(id, body);
-    return this.postsRepository.findOneBy({ id });
+  async update(userId: string, postId: string, body: UpdatePostDto) {
+    const updatedPost = await this.postsRepository.update(
+      { id: postId, user: { id: userId } },
+      body,
+    );
+    console.log('Updated post:', updatedPost);
+    return updatedPost;
   }
 
   async findAll(userId?: string): Promise<Post[]> {
@@ -54,7 +58,6 @@ export class PostsService {
 
     try {
       posts = await this.postsRepository.find({
-        relations: { user: true },
         where: { user: { id: userId } },
       });
       await this.setCacheValue(userId!, JSON.stringify(posts));
@@ -77,8 +80,8 @@ export class PostsService {
     return post;
   }
 
-  async delete(id: string): Promise<void> {
-    await this.postsRepository.delete(id);
+  async delete(id: string, userId: string): Promise<void> {
+    await this.postsRepository.delete({ id, user: { id: userId } });
   }
 
   async setCacheValue(key: string, value: string) {

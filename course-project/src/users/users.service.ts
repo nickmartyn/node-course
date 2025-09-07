@@ -54,7 +54,14 @@ export class UsersService {
     return user;
   }
 
-  async update(id, user: Partial<User>): Promise<User | null> {
+  async update(
+    id,
+    user: Partial<User> & { password?: string },
+  ): Promise<User | null> {
+    if (user.password) {
+      user.passwordHash = await bcrypt.hash(user.password, 10);
+      delete user.password;
+    }
     await this.usersRepository.update(id, user);
     return this.usersRepository.findOneBy({ id: user.id });
   }
