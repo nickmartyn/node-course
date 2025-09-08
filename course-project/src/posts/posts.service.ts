@@ -38,12 +38,13 @@ export class PostsService {
   }
 
   async update(userId: string, postId: string, body: UpdatePostDto) {
-    const updatedPost = await this.postsRepository.update(
-      { id: postId, user: { id: userId } },
-      body,
-    );
-    console.log('Updated post:', updatedPost);
-    return updatedPost;
+    const post = await this.postsRepository.findOne({
+      where: { id: postId, user: { id: userId } },
+    });
+    if (!post) {
+      return null;
+    }
+    return this.postsRepository.save({ ...post, ...body });
   }
 
   async findAll(userId?: string): Promise<Post[]> {

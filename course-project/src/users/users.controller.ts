@@ -71,7 +71,7 @@ export class UsersController {
   @ApiBody({ type: UpdateUserDto })
   async updateUser(
     @CurrentUser() currentUser: AuthorizedUser,
-    @Param() userId: string,
+    @Param('id') userId: string,
     @Body() body: Partial<User>,
   ) {
     if (currentUser.userId !== userId) {

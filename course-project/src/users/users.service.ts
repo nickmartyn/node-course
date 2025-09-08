@@ -55,7 +55,7 @@ export class UsersService {
   }
 
   async update(
-    id,
+    id: string,
     user: Partial<User> & { password?: string },
   ): Promise<User | null> {
     if (user.password) {

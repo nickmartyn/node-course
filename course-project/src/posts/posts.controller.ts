@@ -7,6 +7,7 @@ import {
   Param,
   Query,
   Delete,
+  NotFoundException,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './post.entity';
@@ -19,8 +20,8 @@ import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiBody,
-  ApiTags, 
-  ApiBearerAuth
+  ApiTags,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { User } from '../decorators/user.decorator';
 import type { AuthorizedUser } from '../types/authorizedUser.interface';
@@ -52,7 +53,6 @@ export class PostsController {
   @ApiForbiddenResponse({ description: 'Access denied' })
   async getPost(@Param('id') id: string) {
     const post = await this.postsService.findOne(id);
-    console.log('Retrieved post:', post);
     if (!post) {
       return { message: 'Post not found' };
     }
@@ -84,6 +84,9 @@ export class PostsController {
     @Body() body: UpdatePostDto,
   ) {
     const post = await this.postsService.update(user.userId, postId, body);
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
     return post;
   }
 
